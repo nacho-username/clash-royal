@@ -22,11 +22,23 @@ export async function getPlayerData(playerTag: string): Promise<PlayerData> {
 
     console.log("API Response:", response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Detailed error:", error);
+
     if (axios.isAxiosError(error)) {
       console.error("Axios error details:", error.response?.data);
+      throw new Error(
+        `Failed to fetch player data: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
-    throw new Error(`Failed to fetch player data: ${error.message}`);
+
+    // Handle non-Axios errors
+    throw new Error(
+      `Failed to fetch player data: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 }
